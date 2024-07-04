@@ -89,7 +89,7 @@ exec echo 1
 exec echo 2
 # exec "/run/current-system/sw/bin/xrandr --addmode HDMI-1 {resolution}_60.00"
 exec echo 3
-exec "/run/current-system/sw/bin/xrandr --output HDMI-1 --mode {resolution}_60.00"
+# exec "/run/current-system/sw/bin/xrandr --output HDMI-1 --mode {resolution}_60.00"
 exec echo 4
 exec "/run/current-system/sw/bin/xrandr --output HDMI-1 --rotate {rotation}"
 exec "/run/current-system/sw/bin/xset s off"
