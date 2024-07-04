@@ -2,7 +2,7 @@ from thymis_controller import models, modules
 
 
 class Kiosk(modules.Module):
-    displayName: str = "Kiosk"
+    displayName: str = "Kiosk Smart Factory"
 
     kiosk_url = models.Setting(
         name="kiosk.url",
