@@ -28,6 +28,15 @@ class Kiosk(modules.Module):
         example="normal",
     )
 
+    touch_calibration_matrix = models.Setting(
+        name="kiosk.touch_calibration_matrix",
+        type="select-one",
+        options=["normal", "inverted", "left", "right"],
+        default="normal",
+        description="The calibration matrix for the touchscreen.",
+        example="normal",
+    )
+
     def write_nix_settings(
         self, f, module_settings: models.ModuleSettings, priority: int
     ):
@@ -48,6 +57,21 @@ class Kiosk(modules.Module):
             if "rotation" in module_settings.settings
             else self.rotation.default
         )
+
+        touch_calibration_matrix_setting = (
+            module_settings.settings["touch_calibration_matrix"]
+            if "touch_calibration_matrix" in module_settings.settings
+            else self.touch_calibration_matrix.default
+        )
+
+        touch_calibration_matrix = {
+            "normal": "1 0 0 0 1 0 0 0 1",
+            "inverted": "-1 0 1 0 -1 1 0 0 1",
+            "left": "0 -1 1 1 0 0 0 0 1",
+            "right": "0 1 0 -1 0 1 0 0 1",
+        }[touch_calibration_matrix_setting]
+
+
 
         f.write(
             f"""
@@ -75,6 +99,15 @@ exec "${{pkgs.unclutter}}/bin/unclutter"
 # exec ${{pkgs.firefox}}/bin/firefox
 exec ${{pkgs.firefox}}/bin/firefox --kiosk {kiosk_url}
 '');
+services.xserver.extraConfig = ''
+Section "InputClass"
+    Identifier "Coordinate Transformation Matrix"
+    MatchIsTouchscreen "on"
+    MatchDevicePath "/dev/input/event*"
+    MatchDriver "libinput"
+    Option "CalibrationMatrix" "{touch_calibration_matrix}"
+EndSection
+'';
         """
         )
         f.write(
